@@ -1,0 +1,12 @@
+// public/main.js
+
+// Fetch the user data from your API endpoint
+fetch('/users')
+  .then(response => response.json())
+  .then(data => {
+    console.log('Fetched data:', data);
+    // You can now update your DOM or perform other operations with `data`
+    const container = document.getElementById('data-container');
+    container.innerHTML = data.map(user => `<p>${user.name}</p>`).join('');
+  })
+  .catch(error => console.error('Error fetching data:', error)); 
