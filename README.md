@@ -8,3 +8,6 @@ FOR THE NUMBER GUESSING GAME (Pre-implementation)
 | 4. follow the "http://localhost:8080" link.
 
 This is sourced from https://github.com/prateekkalra/guess-game 
+
+FOR SNAKE GAME (Pre-implementation)
+follow same directions from number guessing game
