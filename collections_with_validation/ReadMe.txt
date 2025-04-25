@@ -8,7 +8,7 @@ db.RockPaperScissors.insertOne({
     username: "user1",               // String
     Score: 123,                       // Integer
     HighestScore: 150,                // Integer
-    timeElapsed: "12:34",             // String in HH:MM format
+    timeElapsed: "12:34",             // String in MM:SS format 
     timestamp: new Date("2025-04-09T17:21:00Z") // Date in ISO format
 })
 anything that does not fit this model will fail verification and will not be added to the database
