@@ -217,7 +217,7 @@ app.get('/api/leaderboard/all', async (req, res) => {
   }
 });
 
-
+//login and registration routes written by Michael
 // Register route
 app.post('/register', express.urlencoded({ extended: true }), async (req, res) => {
   const { username, password, name, email, age } = req.body;
