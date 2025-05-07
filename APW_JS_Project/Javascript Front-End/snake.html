@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Snake Game</title>
+    <style>
+        canvas {
+            border: 2px solid #000;
+            display: block;
+            margin: 40px auto;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.location.href='/'" style="
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+">← Home</button>
+
+    <canvas id="snake" width="512" height="512"></canvas>
+    <script src="snake.js"></script>
+</body>
+</html>

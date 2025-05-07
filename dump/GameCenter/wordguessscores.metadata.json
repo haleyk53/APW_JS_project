@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"3a7cf7db2bcb4274b0d4fe0dac67ed50","collectionName":"wordguessscores","type":"collection"}

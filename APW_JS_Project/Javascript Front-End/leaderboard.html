@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Leaderboards</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    input {
+      padding: 8px;
+      margin-bottom: 20px;
+      width: 300px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    h2 {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>All Leaderboards</h1>
+  <input type="text" id="searchInput" placeholder="Search by username...">
+  <a href="/index.html" style="
+  display: inline-block;
+  padding: 10px 16px;
+  margin: 20px auto;
+  background-color: #2196F3;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 16px;
+">← Return to Home</a>
+
+
+  <div id="leaderboards"></div>
+
+  <script>
+
+     function sortTable(tableId, key) {
+        const table = document.getElementById(tableId);
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        const index = Array.from(table.querySelectorAll('thead th')).findIndex(th => th.textContent.toLowerCase().includes(key));
+        
+        const sortedRows = rows.sort((a, b) => {
+        let valA = a.cells[index].textContent;
+        let valB = b.cells[index].textContent;
+
+        // Try to compare as numbers, fallback to string
+        const numA = parseFloat(valA);
+        const numB = parseFloat(valB);
+        if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+        return valA.localeCompare(valB);
+        });
+
+        const tbody = table.querySelector('tbody');
+        tbody.innerHTML = '';
+        sortedRows.forEach(row => tbody.appendChild(row));
+  }
+
+    async function fetchLeaderboard(query = '') {
+      const res = await fetch('/api/leaderboard/all?q=' + encodeURIComponent(query));
+      const data = await res.json();
+      return data;
+    }
+
+    function renderTable(title, entries, columns) {
+        let tableId = title.replace(/\s+/g, '') + 'Table';
+        let html = `<h2>${title}</h2><table id="${tableId}"><thead><tr>`;
+        columns.forEach(col => {
+            html += `<th onclick="sortTable('${tableId}', '${col.toLowerCase()}')">${col} ⬍</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+        entries.forEach(entry => {
+            html += `<tr>`;
+            columns.forEach(col => {
+            html += `<td>${entry[col.toLowerCase()] ?? ''}</td>`;
+            });
+            html += `</tr>`;
+        });
+        html += `</tbody></table>`;
+        return html;
+    }
+
+
+    async function renderAllLeaderboards(query = '') {
+      const data = await fetchLeaderboard(query);
+      const container = document.getElementById('leaderboards');
+      container.innerHTML =
+        renderTable('Snake', data.snake, ['Username', 'Score', 'Date']) +
+        renderTable('Number Guesser', data.numberGuess, ['Username', 'Attempts', 'Date']) +
+        renderTable('Word Guesser', data.wordGuess, ['Username', 'Guesses', 'Success', 'Word', 'Date']);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value;
+      renderAllLeaderboards(query);
+    });
+
+    renderAllLeaderboards();
+  </script>
+</body>
+</html>

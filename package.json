@@ -1,0 +1,25 @@
+{
+  "name": "apw_js_project",
+  "version": "1.0.0",
+  "description": "The game website group for APW_JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haleyk53/APW_JS_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/haleyk53/APW_JS_project/issues"
+  },
+  "homepage": "https://github.com/haleyk53/APW_JS_project#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  }
+}

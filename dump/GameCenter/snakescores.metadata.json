@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"0aedd762ecf5435a9c613fcacd4f5bf3","collectionName":"snakescores","type":"collection"}

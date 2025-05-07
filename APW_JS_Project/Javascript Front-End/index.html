@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <a href="/leaderboard.html" style="
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 10px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+  ">View All Leaderboards</a>
+  
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid #eee;
+        }
+
+        .login-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-button.logged-in {
+            background-color: #dc3545;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .leaderboard-content {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Login/Register Modal -->
+    <div id="authModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+        <div style="background:white; padding:20px; border-radius:10px; width:300px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <button id="showLoginTab" style="flex:1;">Login</button>
+            <button id="showRegisterTab" style="flex:1;">Register</button>
+        </div>
+        <form id="loginForm" style="display:block;">
+            <input type="text" placeholder="Username" name="username" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <input type="password" placeholder="Password" name="password" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <button type="submit" style="width:100%;padding:10px;">Login</button>
+        </form>
+        <form id="registerForm" style="display:none;">
+            <input type="text" placeholder="Username" name="username" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <input type="password" placeholder="Password" name="password" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <input type="text" placeholder="Full Name" name="name" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <input type="email" placeholder="Email" name="email" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <input type="number" placeholder="Age" name="age" required style="width:100%;margin-bottom:10px;padding:8px;">
+            <button type="submit" style="width:100%;padding:10px;">Register</button>
+        </form>
+        <div id="authMessage" style="margin-top:10px;text-align:center;color:darkred;"></div>
+        </div>
+    </div>
+  
+        <header class="header">
+            <h1>Game Center</h1>
+            <button id="loginButton" class="login-button">Login</button>
+        </header>
+
+        <main class="main-content">
+            <section class="games-section">
+                <h2>Available Games</h2>
+                <div class="games-grid" id="gamesGrid"></div>
+            </section>
+
+            <section class="leaderboards-section">
+                <h2>Leaderboards</h2>
+                <div class="leaderboard-tabs" id="leaderboardTabs"></div>
+                <div class="leaderboard-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+        // Game data
+        const games = [
+            { id: 'game1', name: 'Word Guesser', description: 'try to guess the correct word' },
+            { id: 'game2', name: 'snake', description: "eat the apples and don't bite your tail" },
+            { id: 'game3', name: 'Number Guesser', description: 'Guess the number between 1 and 100' },
+            { id: 'game4', name: 'Game4', description: 'blahblahblah' }
+        ];
+
+        const leaderboardData = {
+            game1: [
+                { rank: 1, username: 'Player1', score: 1000 },
+                { rank: 2, username: 'Player2', score: 950 },
+                { rank: 3, username: 'Player3', score: 900 },
+            ],
+            game2: [
+                { rank: 1, username: 'Player4', score: 800 },
+                { rank: 2, username: 'Player5', score: 750 },
+            ],
+            game3: [
+                { rank: 1, username: 'Player6', score: 1200 },
+                { rank: 2, username: 'Player7', score: 1150 },
+            ],
+            game4: [
+                { rank: 1, username: 'Player8', score: 500 },
+                { rank: 2, username: 'Player9', score: 450 },
+            ]
+        };
+
+        // State
+        let isLoggedIn = false;
+        let activeLeaderboard = 'game1';
+
+        // DOM Elements
+        const loginButton = document.getElementById('loginButton');
+        const gamesGrid = document.getElementById('gamesGrid');
+        const leaderboardTabs = document.getElementById('leaderboardTabs');
+        const leaderboardBody = document.getElementById('leaderboardBody');
+
+        // Event Handlers
+        function handleLogin() {
+            if (isLoggedIn) {
+                fetch('/logout', { method: 'POST' })
+                .then(() => {
+                    isLoggedIn = false;
+                    loginButton.textContent = 'Login';
+                    loginButton.classList.remove('logged-in');
+                });
+            } else {
+                document.getElementById('loginModal').style.display = 'block';
+            }
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            fetch('/login', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(res => {
+                if (res.ok) {
+                isLoggedIn = true;
+                loginButton.textContent = 'Logout';
+                loginButton.classList.add('logged-in');
+                document.getElementById('loginModal').style.display = 'none';
+                } else {
+                alert('Login failed');
+                }
+            });
+        });
+
+        // On page load, check session
+        fetch('/session')
+        .then(res => res.json())
+        .then(data => {
+            if (data.username) {
+            isLoggedIn = true;
+            loginButton.textContent = 'Logout';
+            loginButton.classList.add('logged-in');
+            }
+        });
+
+
+        function handleGameClick(gameId) {
+            if (!isLoggedIn) {
+                alert('Please log in to play games');
+                return;
+            }
+
+            if (gameId === 'game1') {
+                window.location.href = '/WordGame.html';
+            } 
+            else if (gameId === 'game2') {
+                window.location.href = '/snake.html';
+            }
+            else if (gameId === 'game3') {
+                window.location.href = '/numberguess.html';
+            }
+            else {
+                alert(`Game "${gameId}" is not implemented yet.`);
+            }
+        }
+
+    function updateLeaderboard(gameId) {
+        activeLeaderboard = gameId;
+
+        if (gameId === 'game1'){
+            fetch('/api/wordguess/leaderboard')
+                .then(res => res.json())
+                .then(data => renderLeaderboard(data));   
+        } else if (gameId === 'game2') {
+            fetch('/api/snake/leaderboard')
+                .then(res => res.json())
+                .then(data => renderLeaderboard(data));
+        } else if (gameId === 'game3') {
+            fetch('/api/numberguess/leaderboard')
+                .then(res => res.json())
+                .then(data => renderLeaderboard(data));
+        } else {
+            const data = leaderboardData[gameId];
+            renderLeaderboard(data);
+        }
+
+        function renderLeaderboard(data) {
+            leaderboardBody.innerHTML = data.map(entry => `
+                <tr>
+                    <td>${entry.rank}</td>
+                    <td>${entry.username}</td>
+                    <td>${entry.attempts || entry.score || entry.guesses}</td>
+                </tr>
+            `).join('');
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.gameId === gameId);
+            });
+        }
+    }
+
+
+        // Initialize Games Grid
+        games.forEach(game => {
+            const gameCard = document.createElement('div');
+            gameCard.className = 'game-card';
+            gameCard.innerHTML = `
+                <h3>${game.name}</h3>
+                <p>${game.description}</p>
+            `;
+            gameCard.onclick = () => handleGameClick(game.id);
+            gamesGrid.appendChild(gameCard);
+        });
+
+        // Initialize Leaderboard Tabs
+        games.forEach(game => {
+            const tab = document.createElement('button');
+            tab.className = 'tab';
+            tab.textContent = game.name;
+            tab.dataset.gameId = game.id;
+            tab.onclick = () => updateLeaderboard(game.id);
+            leaderboardTabs.appendChild(tab);
+        });
+
+        // Event Listeners
+        loginButton.addEventListener('click', handleLogin);
+
+        // Initialize first leaderboard
+        updateLeaderboard('game1');
+        const authModal = document.getElementById('authModal');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const authMessage = document.getElementById('authMessage');
+        const showLoginTab = document.getElementById('showLoginTab');
+        const showRegisterTab = document.getElementById('showRegisterTab');
+
+        loginButton.addEventListener('click', () => {
+        if (isLoggedIn) {
+            fetch('/logout', { method: 'POST' })
+            .then(() => {
+                isLoggedIn = false;
+                loginButton.textContent = 'Login';
+                loginButton.classList.remove('logged-in');
+            });
+        } else {
+            authModal.style.display = 'flex';
+            showLoginTab.click();
+        }
+        });
+
+        showLoginTab.addEventListener('click', () => {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        authMessage.textContent = '';
+        });
+
+        showRegisterTab.addEventListener('click', () => {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        authMessage.textContent = '';
+        });
+
+        loginForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const data = new URLSearchParams(new FormData(loginForm));
+        fetch('/login', {
+            method: 'POST',
+            body: data
+        }).then(res => {
+            if (res.ok) {
+            isLoggedIn = true;
+            loginButton.textContent = 'Logout';
+            loginButton.classList.add('logged-in');
+            authModal.style.display = 'none';
+            } else {
+            authMessage.textContent = 'Login failed';
+            }
+        });
+        });
+
+        registerForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const data = new URLSearchParams(new FormData(registerForm));
+        fetch('/register', {
+            method: 'POST',
+            body: data
+        }).then(res => {
+            if (res.ok) {
+            authMessage.style.color = 'green';
+            authMessage.textContent = 'Registration successful. You can now log in.';
+            showLoginTab.click();
+            registerForm.reset();
+            } else {
+            res.text().then(text => {
+                authMessage.textContent = text || 'Registration failed.';
+            });
+            }
+        });
+        });
+
+        // Hide modal when clicking outside
+        authModal.addEventListener('click', e => {
+        if (e.target === authModal) {
+            authModal.style.display = 'none';
+        }
+        });
+
+        });
+    </script>
+      
+</body>
+</html>
