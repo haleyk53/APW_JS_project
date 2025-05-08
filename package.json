@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/haleyk53/APW_JS_project#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
     "mongoose": "^8.13.2"
   }
